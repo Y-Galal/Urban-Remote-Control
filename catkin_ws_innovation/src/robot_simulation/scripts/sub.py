@@ -22,12 +22,29 @@ import zmq
 import time
 from zmq import Poller
 from base64 import b64encode
+import serial
+
+
+# --- Network Init ---
 
 context = zmq.Context()
 socket = context.socket(zmq.PAIR)
 socket.bind("tcp://127.0.0.1:5000")
 poller = zmq.Poller()
 poller.register(socket, flags=zmq.POLLIN)
+
+
+# --- Decoding Init ---
+
+Throttle=0
+Steering=0
+
+serialPort=0
+maxThrottle = 15
+minThrottle = -5
+
+maxSteering =  26
+minSteering = -24
 
 
 
@@ -50,24 +67,64 @@ def image_callback(msg):
 
 
 
-
-#    print(cv2_img.reshape(-1))
-#    data= cv2_img.reshape(-1)
-#    encoded_string = b64encode(cv2_img)
-#    print(encoded_string)
-#    socket.send(encoded_string)
-#    socket.send_string(encoded_string.decode('utf-8'))
-
-
-
-
+    # The polling part which needs a bit more optimization ( multi processing )
     socks = dict(poller.poll(150))
     if socks.get(socket) == zmq.POLLIN:
         msg= socket.recv_string(flags=zmq.NOBLOCK)
         print(msg)
 
 
+# --- Decoding Layer Functions ---
+
+def serialCommunication():
+    global serialPort
+    serialPort= serial.Serial(port = "/dev/ttyACM0", baudrate=115200)
+    #serialPort.open()
+
+
+def decoding(decision):
+    message=''
+    global Throttle
+    global Steering
+    if decision == 'w':
+        if Throttle < maxThrottle:
+            Throttle = Throttle+1
+        message = str(Throttle) + 't'
+    elif decision == 'a':
+        if Steering > minSteering:
+            Steering = Steering-1
+        message = str(Steering) + 'o'
+    elif decision == 's':
+        if Throttle > minThrottle:
+            Throttle = Throttle-1
+        message = str(Throttle) + 't'
+    elif decision == 'd':
+        if Steering < maxSteering:
+            Steering = Steering+1
+        message = str(Steering) + 'o'
+
+    #Sizing the packet before sending it (4 bytes/packet)
+    if message[0] == '-' and len(message) == 3:
+        message = message[0] + '0' + message[1:]
+    elif len(message) == 3:
+        message = '0' + message
+    elif len(message) == 2:
+        message = '00'+ message      #004o can be executed correctly in state decode????
+   
+        
+        
+    #    print(message)
+    #    message = message.encode('ascii', 'ignore')
+    #    serialPort.write(message)
+
+
+
+
+
 def main():
+    # --- Serial Communication Init ---
+    #    serialCommunication()
+
     rospy.init_node('image_listener')
     # Define your image topic
     image_topic = "/robot/camera1/image_raw"

@@ -8,7 +8,6 @@ import numpy as np
 import base64
 import cv2
 import io
-from PIL import Image
 
 
 class ApplicationWindow(QtWidgets.QMainWindow):
@@ -30,7 +29,6 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.socket = self.context.socket(zmq.PAIR)
         self.socket.connect("tcp://127.0.0.1:5000")  # local host
         # self.socket.connect("tcp://192.168.214.246:8888")  # mobile hotspot
-        self.pixmap = QPixmap("camera_image.jpg")
 
 
 
@@ -41,9 +39,6 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.ui.arrow_left.clicked.connect(lambda: self.sendData("left"))
         self.ui.arrow_right.clicked.connect(lambda: self.sendData("right"))
 
-    def showImage(self):
-        # Putting the image into the GUI
-        self.ui.label.setPixmap(self.pixmap)
 
     def Decode(self, testmsg):
         # Decoding the string from Base64 into a jpg format again
@@ -56,12 +51,13 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         # To make it BW, use '0'
         data = cv2.imdecode(decoded,1)
 
-        # Show the Video stream in a window
-        cv2.imshow("Vehicle Stream",data)
+        # Creating a Qimage item which is suitable to be showed in GUI
+        self.image = QtGui.QImage(data, data.shape[1], data.shape[0], QtGui.QImage.Format_RGB888).rgbSwapped()
 
-        # In order to be able to close the window
-        cv2.waitKey(1)
+        # Putting the image in the GUI
+        self.ui.label.setPixmap(QtGui.QPixmap.fromImage(self.image))
 
+     
     def sendData(self, data):
         self.socket.send_string(data)
 
