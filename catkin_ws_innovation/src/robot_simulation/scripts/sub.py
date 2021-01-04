@@ -16,6 +16,7 @@ from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 # OpenCV2 for saving an image
 import cv2
+# from sip import Buffer
 
 import zmq
 import time
@@ -36,18 +37,15 @@ bridge = CvBridge()
 def image_callback(msg):
     print("Received an image!")
 
-        # Convert your ROS Image message to OpenCV2
+    # Convert your ROS Image message to OpenCV2
     cv2_img = bridge.imgmsg_to_cv2(msg, "bgr8")
-    rospy.sleep(2)
-#    print(cv2_img)
-    # Save your OpenCV2 image as a jpeg
-    cv2.imwrite('camera_image.jpeg', cv2_img)
 
-    f = open("camera_image.jpeg",'rb')
-    bytes = bytearray(f.read())
-    strng = b64encode(bytes)
+    # Compress the Image to .jpg format
+    encoded,mesg = cv2.imencode(".jpg",cv2_img)
+    
+    # Encode the Message as Base64 and send it over the ZMQ network
+    strng = b64encode(mesg)
     socket.send(strng)
-    f.close()
 
 
 
