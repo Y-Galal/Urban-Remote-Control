@@ -65,13 +65,20 @@ def image_callback(msg):
     socket.send(strng)
 
 
-
-
-    # The polling part which needs a bit more optimization ( multi processing )
-    socks = dict(poller.poll(150))
-    if socks.get(socket) == zmq.POLLIN:
-        msg= socket.recv_string(flags=zmq.NOBLOCK)
-        print(msg)
+    #Non-Blocking receiving commands from GUI
+    try:       
+        msg= socket.recv_string(flags=zmq.NOBLOCK) #Trying to receive from GUI
+        print(msg)                                 #If the data was there and received, print it
+    except zmq.Again as e:                 #zmq.Again is the exception fired if there wasn't data received from the GUI
+    #Nothing is processed here but we should handle the exception.
+        pass
+    
+    ################ Receiving with 150ms polling (causes fps lag) ################
+    #socks = dict(poller.poll(150))
+    #if socks.get(socket) == zmq.POLLIN:
+    #   msg= socket.recv_string(flags=zmq.NOBLOCK)
+    #  print(msg)
+    ###############################################################################
 
 
 # --- Decoding Layer Functions ---
