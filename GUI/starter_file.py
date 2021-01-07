@@ -45,7 +45,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         decoded = base64.b64decode(testmsg)
 
         # Decode the string into np.uint8 data stream
-        decoded = np.fromstring(decoded,dtype=np.uint8)
+        decoded = np.frombuffer(decoded,dtype=np.uint8)     #np.fromstring produces a warning
 
         # Decode OpenCV with parameter '1' to make it RGB
         # To make it BW, use '0'
@@ -62,8 +62,11 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.socket.send_string(data)
 
     def readData(self):
-        msg = self.socket.recv(flags= zmq.NOBLOCK)
-        self.Decode(msg)
+        try:       
+            msg = self.socket.recv(flags= zmq.NOBLOCK)
+            self.Decode(msg)                                
+        except zmq.Again as e:                 #zmq.Again is the exception fired if there wasn't data received from the GUI
+            pass
         
         
 def main():
