@@ -1,5 +1,6 @@
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtGui import QPixmap
+from PyQt5.Qt import Qt
 from mainwindow import Ui_MainWindow
 import sys
 import zmq
@@ -29,9 +30,6 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.socket = self.context.socket(zmq.PAIR)
         self.socket.connect("tcp://127.0.0.1:5000")  # local host
         # self.socket.connect("tcp://192.168.214.246:8888")  # mobile hotspot
-
-
-
 
         # Push buttons commands
         self.ui.arrow_up.clicked.connect(lambda: self.sendData("forward"))
@@ -67,6 +65,26 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.Decode(msg)                                
         except zmq.Again as e:                 #zmq.Again is the exception fired if there wasn't data received from the GUI
             pass
+
+    #This function is responsible for the keyboard interactions ( WASD )
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_W:
+            print("W pressed")
+            self.sendData("W")
+
+        if event.key() == Qt.Key_A:
+            print("A pressed")
+            self.sendData("A")
+
+        if event.key() == Qt.Key_S:
+            print("S pressed")
+            self.sendData("S")
+
+        if event.key() == Qt.Key_D:
+            print("D pressed")
+            self.sendData("D")
+
+        
         
         
 def main():
