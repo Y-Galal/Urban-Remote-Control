@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/shelleco/catkin_ws_zed/devel/setup.sh
