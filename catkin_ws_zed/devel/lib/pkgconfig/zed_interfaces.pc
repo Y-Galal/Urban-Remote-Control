@@ -1,8 +1,0 @@
-prefix=/home/shelleco/catkin_ws_zed/devel
-
-Name: zed_interfaces
-Description: Description of zed_interfaces
-Version: 3.1.0
-Cflags: -I/home/shelleco/catkin_ws_zed/devel/include -I/home/shelleco/catkin_ws_zed/src/zed-ros-wrapper/zed_interfaces/include
-Libs: -L${prefix}/lib 
-Requires: message_generation std_msgs geometry_msgs sensor_msgs
