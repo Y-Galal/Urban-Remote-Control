@@ -86,7 +86,6 @@ def image_callback(msg):
 def serialCommunication():
     global serialPort
     serialPort= serial.Serial(port = "/dev/ttyACM0", baudrate=115200)
-    #serialPort.open()
 
 
 def decoding(decision):
