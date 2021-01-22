@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>robot_simulation</name>
+  <name>server</name>
   <version>0.1.0</version>
   <description>
     The ros_robotics package contains URDF examples for a 2-wheeled robot, dd_robot

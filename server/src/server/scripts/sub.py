@@ -1,35 +1,39 @@
-#!/usr/bin/env python3
-# Copyright (c) 2015, Rethink Robotics, Inc.
+#*********************************************************
+#                                                        *
+#      Cairo University Shell Eco-Racing Team            *
+#      Shell Eco-Marathon 2021 Autonomous System         *
+#      Embedded Autonomous Movement Control Sub-team     *
+#                                                        *
+#           -> Innovation-Award Project <-               *
+#*********************************************************
 
-# Using this CvBridge Tutorial for converting
-# ROS images to OpenCV2 images
-# http://wiki.ros.org/cv_bridge/Tutorials/ConvertingBetweenROSImagesAndOpenCVImagesPython
-
-# Using this OpenCV2 tutorial for saving Images:
-# http://opencv-python-tutroals.readthedocs.org/en/latest/py_tutorials/py_gui/py_image_display/py_image_display.html
-
-# OpenCV2 for saving an image
+# OpenCV Library 
 import cv2
-# rospy for the subscriber
+from base64 import b64encode
+
+# rospy for the Subscriber
 import rospy
+
 # ROS Image message
 from sensor_msgs.msg import Image
+
 # ROS Image message -> OpenCV2 image converter
 from cv_bridge import CvBridge, CvBridgeError
-# from sip import Buffer
 
+# ZMQ Networking Library
 import zmq
-import time
 from zmq import Poller
-from base64 import b64encode
+
+# For Serial Port Data Transmission
 import serial
+import time
 
 
 # --- Network Init ---
 
 context = zmq.Context()
 socket = context.socket(zmq.PAIR)
-socket.bind("tcp://192.168.182.147:5000")
+socket.bind("tcp://192.168.1.4:5000")
 poller = zmq.Poller()
 poller.register(socket, flags=zmq.POLLIN)
 
@@ -52,8 +56,6 @@ minSteering = -24
 bridge = CvBridge()
 
 def image_callback(msg):
-    print("Received an image!")
-
     # Convert your ROS Image message to OpenCV2
     cv2_img = bridge.imgmsg_to_cv2(msg, "bgr8")
 
@@ -67,19 +69,11 @@ def image_callback(msg):
 
     #Non-Blocking receiving commands from GUI
     try:       
-        msg= socket.recv_string(flags=zmq.NOBLOCK) #Trying to receive from GUI
+        msg= socket.recv_string(flags=zmq.NOBLOCK) #Trying to receive from the client GUI
         print(msg)                                 #If the data was there and received, print it
     except zmq.Again as e:                 #zmq.Again is the exception fired if there wasn't data received from the GUI
     #Nothing is processed here but we should handle the exception.
         pass
-    
-    ################ Receiving with 150ms polling (causes fps lag) ################
-    #socks = dict(poller.poll(150))
-    #if socks.get(socket) == zmq.POLLIN:
-    #   msg= socket.recv_string(flags=zmq.NOBLOCK)
-    #  print(msg)
-    ###############################################################################
-
 
 # --- Decoding Layer Functions ---
 
@@ -137,7 +131,6 @@ def main():
     # image_topic = "/robot/camera1/image_raw"
     # Set up your subscriber and define its callback
     rospy.Subscriber(image_topic, Image, image_callback)
-    print("Hello")
     # Spin until ctrl + c
     rospy.spin()
 

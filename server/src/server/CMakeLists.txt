@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(robot_simulation)
+project(server)
 
 find_package(catkin REQUIRED)
 catkin_package()
