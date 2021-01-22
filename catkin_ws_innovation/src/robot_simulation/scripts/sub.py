@@ -33,15 +33,11 @@ minSteering = -24
 
 # Instantiate CvBridge
 bridge = CvBridge()
-# --- Decoding Layer Functions ---
-
-def serialCommunication():
-    global serialPort
-    serialPort= serial.Serial(port = "/dev/ttyACM0", baudrate=115200)
-    #serialPort.open()
-
+# --- Decoding Layer Function ---
 
 def decoding(decision):
+    global serialPort
+    serialPort= serial.Serial(port = "/dev/ttyACM0", baudrate=115200)
     message=''
     global Throttle
     global Steering
@@ -71,25 +67,34 @@ def decoding(decision):
         message = '00'+ message      #004o can be executed correctly in state decode????
    
                
-    #    print(message)
-    #    message = message.encode('ascii', 'ignore')
-    #    serialPort.write(message)
+        print(message)
+        message = message.encode('ascii', 'ignore')
+        serialPort.write(message)
 
 def ServerToClient():
  
     def image_callback(msg):
-      print("Received an image!")
+        print("Received an image!")
 
-      # Convert your ROS Image message to OpenCV2
-      cv2_img = bridge.imgmsg_to_cv2(msg, "bgr8")
+        # Convert your ROS Image message to OpenCV2
+        cv2_img = bridge.imgmsg_to_cv2(msg, "bgr8")
 
-      # Compress the Image to .jpg format
-      encoded,mesg = cv2.imencode(".jpg",cv2_img)
+        # Compress the Image to .jpg format
+        encoded,mesg = cv2.imencode(".jpg",cv2_img)
     
-      # Encode the Message as Base64 and send it over the ZMQ network
-      strng = b64encode(mesg)
-      socket.send(strng)
-      #  Network Init 
+        #Encode the Message as Base64 and send it over the ZMQ network
+        strng = b64encode(mesg)
+        socket.send(strng)
+         #Non-Blocking receiving commands from GUI
+        try:       
+         msg= socket.recv_string(flags=zmq.NOBLOCK) #Trying to receive from GUI
+         decoding(msg)
+         print(msg)
+        except zmq.Again as e:                     #zmq.Again is the exception fired if there wasn't data received from the GUI
+         #Nothing is processed here but we should handle the exception.
+          pass
+    
+       #  Network Init 
     context = zmq.Context()
     socket = context.socket(zmq.PAIR)
     socket.bind("tcp://127.0.0.1:5000")
@@ -100,27 +105,15 @@ def ServerToClient():
     rospy.Subscriber(image_topic, Image, image_callback)
     # Spin until ctrl + c
     rospy.spin()
+      
 
     
-def ServerRecieve():
-       #  Network Init 
-    context= zmq.Context()
-    socket= context.socket(zmq.PAIR)
-    socket.bind("tcp://127.0.0.1:5000")
-    poller= zmq.Poller()
-    poller.register(socket, flags=zmq.POLLIN)
-     #Non-Blocking receiving commands from GUI
-    #try:       
-    msg= socket.recv_string(flags=zmq.NOBLOCK) #Trying to receive from GUI
-    print(msg)                                 #If the data was there and received, print it
-    #except zmq.Again as e:                         #zmq.Again is the exception fired if there wasn't data received from the GUI
-    #Nothing is processed here but we should handle the exception.
-        #pass
+   
           
 if __name__ == '__main__':
+  
   
       #------------Multiprocessing-------
   CAMERA=multiprocessing.Process(name='camera',target=ServerToClient)
   CAMERA.start()   
-  GUI=multiprocessing.Process(name='GUI',target=ServerRecieve)
-  GUI.start()
+   

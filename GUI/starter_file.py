@@ -34,10 +34,10 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
 
         # Push buttons commands
-        self.ui.arrow_up.clicked.connect(lambda: self.sendData("forward"))
-        self.ui.arrow_down.clicked.connect(lambda: self.sendData("backward"))
-        self.ui.arrow_left.clicked.connect(lambda: self.sendData("left"))
-        self.ui.arrow_right.clicked.connect(lambda: self.sendData("right"))
+        self.ui.arrow_up.clicked.connect(lambda: self.sendData("w"))
+        self.ui.arrow_down.clicked.connect(lambda: self.sendData("a"))
+        self.ui.arrow_left.clicked.connect(lambda: self.sendData("s"))
+        self.ui.arrow_right.clicked.connect(lambda: self.sendData("d"))
 
 
     def Decode(self, testmsg):
