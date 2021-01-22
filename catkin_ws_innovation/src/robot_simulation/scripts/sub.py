@@ -8,14 +8,14 @@
 # Using this OpenCV2 tutorial for saving Images:
 # http://opencv-python-tutroals.readthedocs.org/en/latest/py_tutorials/py_gui/py_image_display/py_image_display.html
 
+# OpenCV2 for saving an image
+import cv2
 # rospy for the subscriber
 import rospy
 # ROS Image message
 from sensor_msgs.msg import Image
 # ROS Image message -> OpenCV2 image converter
 from cv_bridge import CvBridge, CvBridgeError
-# OpenCV2 for saving an image
-import cv2
 # from sip import Buffer
 
 import zmq
@@ -29,7 +29,7 @@ import serial
 
 context = zmq.Context()
 socket = context.socket(zmq.PAIR)
-socket.bind("tcp://127.0.0.1:5000")
+socket.bind("tcp://192.168.182.147:5000")
 poller = zmq.Poller()
 poller.register(socket, flags=zmq.POLLIN)
 
@@ -133,9 +133,11 @@ def main():
 
     rospy.init_node('image_listener')
     # Define your image topic
-    image_topic = "/robot/camera1/image_raw"
+    image_topic = "/zed/zed_node/right/image_rect_color"
+    # image_topic = "/robot/camera1/image_raw"
     # Set up your subscriber and define its callback
     rospy.Subscriber(image_topic, Image, image_callback)
+    print("Hello")
     # Spin until ctrl + c
     rospy.spin()
 
