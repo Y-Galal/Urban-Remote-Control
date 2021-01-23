@@ -36,10 +36,10 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         # self.socket.connect("tcp://192.168.214.246:8888")  # mobile hotspot
 
         # Push buttons commands
-        self.ui.arrow_up.clicked.connect(lambda: self.sendData("forward"))
-        self.ui.arrow_down.clicked.connect(lambda: self.sendData("backward"))
-        self.ui.arrow_left.clicked.connect(lambda: self.sendData("left"))
-        self.ui.arrow_right.clicked.connect(lambda: self.sendData("right"))
+        self.ui.arrow_up.clicked.connect(lambda: self.sendData("w"))
+        self.ui.arrow_down.clicked.connect(lambda: self.sendData("s"))
+        self.ui.arrow_left.clicked.connect(lambda: self.sendData("a"))
+        self.ui.arrow_right.clicked.connect(lambda: self.sendData("d"))
 
         # Setting Shortcuts for Pushbuttons
         self.ui.arrow_up.setShortcut(QtGui.QKeySequence(Qt.Key_Up))
