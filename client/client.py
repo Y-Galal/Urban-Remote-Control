@@ -17,6 +17,10 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
+        # Window Title
+        self.setWindowTitle("Urban Remote Control")
+
+
         # Timer init  
         # calling ( readData ) every 1000 milliseconds
         self.timer = QtCore.QTimer()
@@ -36,6 +40,13 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.ui.arrow_down.clicked.connect(lambda: self.sendData("backward"))
         self.ui.arrow_left.clicked.connect(lambda: self.sendData("left"))
         self.ui.arrow_right.clicked.connect(lambda: self.sendData("right"))
+
+        # Setting Shortcuts for Pushbuttons
+        self.ui.arrow_up.setShortcut(QtGui.QKeySequence(Qt.Key_Up))
+        self.ui.arrow_down.setShortcut(QtGui.QKeySequence(Qt.Key_Down))
+        self.ui.arrow_left.setShortcut(QtGui.QKeySequence(Qt.Key_Left))
+        self.ui.arrow_right.setShortcut(QtGui.QKeySequence(Qt.Key_Right))
+
 
 
     def Decode(self, testmsg):
@@ -65,24 +76,6 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.Decode(msg)                                
         except zmq.Again as e:                 #zmq.Again is the exception fired if there wasn't data received from the GUI
             pass
-
-    #This function is responsible for the keyboard interactions ( WASD )
-    def keyPressEvent(self, event):
-        if event.key() == Qt.Key_W:
-            print("W pressed")
-            self.sendData("W")
-
-        if event.key() == Qt.Key_A:
-            print("A pressed")
-            self.sendData("A")
-
-        if event.key() == Qt.Key_S:
-            print("S pressed")
-            self.sendData("S")
-
-        if event.key() == Qt.Key_D:
-            print("D pressed")
-            self.sendData("D")
 
         
         

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>887</width>
+    <height>627</height>
    </rect>
   </property>
   <property name="palette">
@@ -489,13 +489,19 @@
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>up.jpeg</normaloff>up.jpeg</iconset>
+                  <normaloff>images/up.png</normaloff>images/up.png</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
                   <width>100</width>
                   <height>100</height>
                  </size>
+                </property>
+                <property name="checkable">
+                 <bool>false</bool>
+                </property>
+                <property name="checked">
+                 <bool>false</bool>
                 </property>
                 <property name="autoExclusive">
                  <bool>false</bool>
@@ -535,7 +541,7 @@
                </property>
                <property name="icon">
                 <iconset>
-                 <normaloff>left.jpeg</normaloff>left.jpeg</iconset>
+                 <normaloff>images/left.png</normaloff>images/left.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -567,7 +573,7 @@
                </property>
                <property name="icon">
                 <iconset>
-                 <normaloff>right.jpeg</normaloff>right.jpeg</iconset>
+                 <normaloff>images/right.png</normaloff>images/right.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -610,7 +616,7 @@
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>down.jpeg</normaloff>down.jpeg</iconset>
+                  <normaloff>images/down.png</normaloff>images/down.png</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -639,7 +645,7 @@
         <property name="frameShadow">
          <enum>QFrame::Raised</enum>
         </property>
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
           <widget class="QLabel" name="label">
            <property name="sizePolicy">
@@ -668,7 +674,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>887</width>
      <height>23</height>
     </rect>
    </property>
