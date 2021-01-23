@@ -1,3 +1,5 @@
+# Decoding layer
+
 import serial
 
 Throttle=0
@@ -9,11 +11,15 @@ minThrottle = -5
 
 maxSteering =  26
 minSteering = -24
-def serialCommunication():
-    global serialPort 
-    serialPort= serial.Serial(port = "/dev/ttyACM2", baudrate=115200)
-    #serialPort.open()
 
+# --- Decoding Layer Functions ---
+
+# function to initialize the serial port with TivaC
+def serialCommunicationInit():
+    global serialPort
+    serialPort= serial.Serial(port = "/dev/ttyACM0", baudrate=115200)
+
+# Function to decode the decision from (w-a-s-d) and sends it using the serial port
 def decoding(decision):
     message=''
     global Throttle
@@ -41,18 +47,10 @@ def decoding(decision):
     elif len(message) == 3:
         message = '0' + message
     elif len(message) == 2:
-        message = '00'+ message         #004o can be executed correctly in state decode????
+        message = '00'+ message      #004o can be executed correctly in state decode????
+     
+    #   print(message)
+    #    message = message.encode('ascii', 'ignore')
+    #    serialPort.write(message)
 
-    
-    print(message)
-    message = message.encode('ascii', 'ignore')
-    serialPort.write(message)
 
-serialCommunication()
-while True:
-    decision = input('Enter Your Decision: ')   #getting the input from keyboard only for testing purposes
-    if decision.lower() == 'w' or decision.lower() == 'a' or decision.lower() == 's'or decision.lower() == 'd':
-        decoding(decision.lower())
-    else:
-        print('W A S D or w a s d only..\n')
-    
