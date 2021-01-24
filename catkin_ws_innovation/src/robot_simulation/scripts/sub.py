@@ -1,28 +1,40 @@
 #!/usr/bin/env python3
-# Copyright (c) 2015, Rethink Robotics, Inc.
-# Using this CvBridge Tutorial for converting
-# ROS images to OpenCV2 images
-# http://wiki.ros.org/cv_bridge/Tutorials/ConvertingBetweenROSImagesAndOpenCVImagesPython
-# Using this OpenCV2 tutorial for saving Images:
-# http://opencv-python-tutroals.readthedocs.org/en/latest/py_tutorials/py_gui/py_image_display/py_image_display.html
+#*********************************************************
+#                                                        *
+#      Cairo University Shell Eco-Racing Team            *
+#      Shell Eco-Marathon 2021 Autonomous System         *
+#      Embedded Autonomous Movement Control Sub-team     *
+#                                                        *
+#           -> Innovation-Award Project <-               *
+#*********************************************************
+
+
 
 # rospy for the subscriber
 import rospy
+
 # ROS Image message
 from sensor_msgs.msg import Image
+
+#openCV Library 
+import cv2
+from base64 import b64encode
+
+
 # ROS Image message -> OpenCV2 image converter
 from cv_bridge import CvBridge, CvBridgeError
-# OpenCV2 for saving an image
-import cv2
-# from sip import Buffer
+
+#ZMQ Networking Library
 import zmq
-import time
 from zmq import Poller
-from base64 import b64encode
-import serial
+import time
+
+#MultiProcessing Library
 import multiprocessing 
 
-# --- Decoding Init ---
+import serial
+
+# ------------------Decoding Initilization ---------------#
 Throttle=0
 Steering=0
 serialPort=0
@@ -31,13 +43,16 @@ minThrottle = -5
 maxSteering =  26
 minSteering = -24
 
-# Instantiate CvBridge
+#-------------------Instantiate CvBridge-------------------#
 bridge = CvBridge()
-# --- Decoding Layer Function ---
 
-def decoding(decision):
+# -----------------Decoding Layer Functions ---------------#
+def serialCommunicationInit():
     global serialPort
     serialPort= serial.Serial(port = "/dev/ttyACM0", baudrate=115200)
+  
+
+def decoding(decision):
     message=''
     global Throttle
     global Steering
@@ -71,7 +86,7 @@ def decoding(decision):
         message = message.encode('ascii', 'ignore')
         serialPort.write(message)
 
-def ServerToClient():
+def MainProcess():
  
     def image_callback(msg):
         print("Received an image!")
@@ -86,18 +101,22 @@ def ServerToClient():
         strng = b64encode(mesg)
         socket.send(strng)
          #Non-Blocking receiving commands from GUI
+         #Trying to receive from GUI
         try:       
-         msg= socket.recv_string(flags=zmq.NOBLOCK) #Trying to receive from GUI
+         msg= socket.recv_string(flags=zmq.NOBLOCK) 
          decoding(msg)
          print(msg)
-        except zmq.Again as e:                     #zmq.Again is the exception fired if there wasn't data received from the GUI
+         #zmq.Again is the exception fired if there wasn't data received from the GUI
+        except zmq.Again as e:                    
          #Nothing is processed here but we should handle the exception.
           pass
     
-       #  Network Init 
+#---------------------Network Initilization----------------------#
     context = zmq.Context()
     socket = context.socket(zmq.PAIR)
     socket.bind("tcp://127.0.0.1:5000")
+    
+#----------------------ROS Initilization-------------------------#       
     rospy.init_node('image_listener')
     # Define your image topic
     image_topic ="/robot/camera1/image_raw"
@@ -111,9 +130,10 @@ def ServerToClient():
    
           
 if __name__ == '__main__':
-  
-  
-      #------------Multiprocessing-------
-  CAMERA=multiprocessing.Process(name='camera',target=ServerToClient)
-  CAMERA.start()   
+
+      #------------Serial Communication Init--------------#
+  serialCommunicationInit() 
+      #------------------Creating Process-----------------#
+  SERVER=multiprocessing.Process(name='SERVER',target=MainProcess)
+  SERVER.start()     
    
