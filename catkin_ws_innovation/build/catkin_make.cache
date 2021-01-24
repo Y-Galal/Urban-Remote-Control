@@ -1,0 +1,2 @@
+robot_simulation
+-DCATKIN_DEVEL_PREFIX=/home/nada/shell/INNOVATION/Urban-Remote-Control/catkin_ws_innovation/devel -DCMAKE_INSTALL_PREFIX=/home/nada/shell/INNOVATION/Urban-Remote-Control/catkin_ws_innovation/install -G Unix Makefiles
